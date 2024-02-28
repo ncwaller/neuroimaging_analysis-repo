@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# script for generating seed connectivity metrics COLLAPSED ACROSS TASK/REST
+## run with preprocessed data
+
+scriptdir= #insert script path
+outputdir= #insert output path
+datadir= #insert data path
+seeddir= #insert seed path
+brainmask= #insert brain mask path
+
+declare -a seeds=( ) #declare array of seeds (1 minimum)
+
+for seedname in ${seeds[@]}; do
+
+	seedfile="$seeddir"/"$seedname".nii.gz #define seed file
+	mkdir -p "$outputdir"/"$seedname"/extractedvalues #make otuput directory for extracted values
+	mkdir -p "$outputdir"/"$seedname"/AllCopes/stats #make otuput directory for stat files
+	cp /.../* $outputdir/$seedname/AllCopes #insert path to necessary FEAT file prerequisites
+	cd $datadir
+	
+	########## FULL ~5 MINS ##########
+	full5minssubjectlist=$(ls *_masked.nii.gz)
+	for subj in $full5minssubjectlist; do
+		subjname=$(echo "$subj" | cut -d'_' -f1)
+		taskname=$(echo "$subj" | cut -d'_' -f2)
+		fileprefix=$(echo "$subj" | cut -d'.' -f1)
+		fslmeants -i $subj -o $outputdir/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt -m $seedfile #run fslmeants on given subject 4D file
+		fsl_glm -i $subj -d $outputdir/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt --out_cope="$outputdir"/"$seedname"/AllCopes/stats/cope_"$subjname"_"$taskname"_"$seedname"_full5mins.nii.gz --out_varcb=$outputdir/$seedname/AllCopes/stats/varcope_"$subjname"_"$taskname"_"$seedname"_full5mins.nii.gz --out_z=$outputdir/$seedname/AllCopes/stats/zstats_"$subjname"_"$taskname"_"$seedname"_full5mins.nii.gz --demean -m $brainmask #run GLM
+	done
+
+	######### INITIAL 2 MINS ##########
+	initial2minssubjectlist=$(ls *sm6mm_masked_initial2mins.nii.gz)
+	for subj in $initial2minssubjectlist; do
+		subjname=$(echo "$subj" | cut -d'_' -f1)
+		taskname=$(echo "$subj" | cut -d'_' -f2)
+		fileprefix=$(echo "$subj" | cut -d'.' -f1)
+		fslmeants -i $subj -o $scriptdir/seed/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt -m $seedfile 
+		fsl_glm -i $subj -d $scriptdir/seed/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt --out_cope="$scriptdir"/seed/"$seedname"/AllCopes/stats/cope_"$subjname"_"$taskname"_"$seedname"_initial2mins.nii.gz --out_varcb=$scriptdir/seed/$seedname/AllCopes/stats/varcope_"$subjname"_"$taskname"_"$seedname"_initial2mins.nii.gz --out_z=$scriptdir/seed/$seedname/AllCopes/stats/zstats_"$subjname"_"$taskname"_"$seedname"_initial2mins.nii.gz --demean -m $brainmask
+	done #subject
+
+	######### MIDDLE 2 MINS ##########
+	middle2minssubjectlist=$(ls *sm6mm_masked_middle2mins.nii.gz)
+	for subj in $middle2minssubjectlist; do
+		subjname=$(echo "$subj" | cut -d'_' -f1)
+		taskname=$(echo "$subj" | cut -d'_' -f2)
+		fileprefix=$(echo "$subj" | cut -d'.' -f1)
+		fslmeants -i $subj -o $scriptdir/seed/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt -m $seedfile 
+		fsl_glm -i $subj -d $scriptdir/seed/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt --out_cope="$scriptdir"/seed/"$seedname"/AllCopes/stats/cope_"$subjname"_"$taskname"_"$seedname"_middle2mins.nii.gz --out_varcb=$scriptdir/seed/$seedname/AllCopes/stats/varcope_"$subjname"_"$taskname"_"$seedname"_middle2mins.nii.gz --out_z=$scriptdir/seed/$seedname/AllCopes/stats/zstats_"$subjname"_"$taskname"_"$seedname"_middle2mins.nii.gz --demean -m $brainmask
+	done #subject
+
+	######### FINAL 2 MINS ##########
+	final2minssubjectlist=$(ls *sm6mm_masked_final2mins.nii.gz)
+	for subj in $final2minssubjectlist; do
+		subjname=$(echo "$subj" | cut -d'_' -f1)
+		taskname=$(echo "$subj" | cut -d'_' -f2)
+		fileprefix=$(echo "$subj" | cut -d'.' -f1)
+		fslmeants -i $subj -o $scriptdir/seed/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt -m $seedfile 
+		fsl_glm -i $subj -d $scriptdir/seed/"$seedname"/extractedvalues/"$fileprefix"_"$seedname"_ts.txt --out_cope="$scriptdir"/seed/"$seedname"/AllCopes/stats/cope_"$subjname"_"$taskname"_"$seedname"_final2mins.nii.gz --out_varcb=$scriptdir/seed/$seedname/AllCopes/stats/varcope_"$subjname"_"$taskname"_"$seedname"_final2mins.nii.gz --out_z=$scriptdir/seed/$seedname/AllCopes/stats/zstats_"$subjname"_"$taskname"_"$seedname"_final2mins.nii.gz --demean -m $brainmask
+	done #subject
+
+comment
+
+done #seed
+
+
+
+
+
+
+
