@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# created to generate symbolic links for 4D fMRI files
+# created to generate symbolic links to 4D fMRI files (helpful for saving memory)
 
 copydir= #insert path to copy the data to
 datadir= #insert path to copy the data from (subject level)
@@ -9,7 +9,7 @@ subjectlist=$(ls --ignore={"*.html","*.txt","*.json","*.tsv","logs"}) #grab subj
 
 for subject in $subjectlist; do
 	if [ ! -e $datadir/"$subject"/func/"$subject"_task-visualrun01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz ]; then
-		echo ""$subject" visualrun01 doeasn't exist in data directory"
+		echo ""$subject" visualrun01 doeasn't exist in data directory" #example file format here
 	elif [ -e $datadir/"$subject"/func/"$subject"_task-visualrun01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz ]; then
 	ln -s $datadir/"$subject"/func/"$subject"_task-visualrun01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz $copydir
 	fi
