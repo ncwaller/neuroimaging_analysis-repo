@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# script to move post-processed fMRI files (simple alteration of symlink creation script)
+
+copydir= #insert path to copy the data to
+datadir= #insert path to copy the data from
+cd $datadir
+subjectlist=$(ls --ignore={"*.html","*.txt","*.json","*.tsv","logs"})
+
+func_run="visual"
+
+for subject in $subjectlist; do
+	if [ ! -e $datadir/"$subject"/func/"$subject"_task-"$func_run"run01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz ]; then
+		echo ""$subject" run01 doeasn't exist in data directory"
+	elif [ -e $datadir/"$subject"/func/"$subject"_task-"$func_run"run01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz ]; then
+	mv $datadir/"$subject"/func/"$subject"_task-"$func_run"run01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz $copydir
+	fi
+done
