@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# script specifying details for fMRIprep preprocessing on remote super computing cluster, but does not run FreeSurfer (saves time)
+
+ 
+###SBATCH --job-name=$subject
+#SBATCH --mail-user=ncwaller@med.umich.edu
+#SBATCH --mail-type=END,FAIL
+
+#SBATCH --account=INSERT
+#SBATCH --partition=standard
+
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+
+#### If you change cpus-per-task or mem, change them in the fmriprep command
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=24gb
+
+#SBATCH --time=40:00:00
+#SBATCH --export=ALL
+
+#### End SBATCH preamble
+
+module load singularity
+
+my_job_header
+
+#### Put your job commands after this line
+
+# export FS_LICENSE
+export FS_LICENSE=$HOME/license.txt
+
+# Set participant name
+participant=$subject
+
+# Create a local directory in which to work
+TMPDIR=$(mktemp -d /tmp/ncwaller-fmriprep.XXXXXXXXX)
+cd $TMPDIR
+mkdir BIDS processed work
+
+# Set the names of the fmriprep diretories.  NOTE, processed and work
+# cannot be in the BIDS directory
+SOURCE_DIR=/scratch/ #insert
+BIDS_DIR=$PWD/BIDS
+OUTPUT_DIR=$PWD/processed
+WORK_DIR=$PWD/work
+
+# Get the needed BIDS data; print only the summary statistics from the copy
+rsync -a --info=STATS /scratch/...INSERT/$participant ./BIDS
+rsync -a --info=STATS /scratch/...INSERT/BIDS/dataset_description.json ./BIDS
+
+# Which singularity image and template to use
+cp -p /...INSERT/fmriprep-20.2.7.sif $TMPDIR
+cp /home/ncwaller/MNI152_T1_2mm_brain.nii.gz $TMPDIR
+image=$TMPDIR/fmriprep-20.2.7.sif
+MNIimg=$TMPDIR/MNI152_T1_2mm_brain.nii.gz
+
+# Print some information about the run that might be useful
+echo "#---------------------------------------------------------------------#"
+echo "Singularity version  :  $(singularity --version)"
+echo "fmriprep version     :  $(singularity exec ${image} fmriprep --version 2>/dev/null)"
+echo "Running on           :  $(hostname -s)"
+echo "Processor type       :  $(lscpu | grep 'Model name' | sed 's/[ \t][ ]*/ /g')"
+echo "Assigned processors  :  $(cat /sys/fs/cgroup/cpuset/slurm/uid_${EUID}/job_${SLURM_JOBID}/cpuset.cpus)"
+echo "Assigned memory nodes:  $(cat /sys/fs/cgroup/cpuset/slurm/uid_${EUID}/job_${SLURM_JOBID}/cpuset.mems)"
+echo "======================================================================="
+echo "/tmp space"
+df -h /tmp
+echo "======================================================================="
+echo "Memory usage"
+free
+echo "#---------------------------------------------------------------------#"
+echo
+
+# Get the start time
+start_time=$(date +%s)
+
+# Run it
+
+source /etc/profile.d/http_proxy.sh
+
+#specify seed
+my_seed=$(od -vAn -N2 -tu4 < /dev/urandom)
+echo "#-----------------------#"
+echo "SEED VALUE IS $my_seed"
+echo "#-----------------------#"
+
+singularity run --cleanenv -B /sw:/sw ${image} \
+    --skip_bids_validation \
+    $BIDS_DIR $OUTPUT_DIR participant \
+    --work-dir $WORK_DIR \
+    --random-seed $my_seed \
+    --nthreads 1 \
+    --omp-nthreads 1 \
+    --skull-strip-fixed-seed \
+    --mem-mb 24576 \
+    --participant-label=${participant} \
+    --output-spaces MNI152NLin6Asym:res-2 \
+    --ignore slicetiming \
+    --fs-license-file $FS_LICENSE \
+    --fs-no-reconall #here's that no FS flag
+
+finish_time=$(date +%s)
+
+# Calculate run time and print in hh:mm format
+printf "Run time:  %02d:%02d\n" $(echo "$run_time / 60" | bc) $(echo "$run_time % 60" | bc)
+
+# Copy the results out for posterity
+echo "Copying $OUTPUT_DIR/$participant to ${SOURCE_DIR}/processed"
+mkdir -p ${SOURCE_DIR}/processed/
+rsync -a --info=STATS $OUTPUT_DIR/* ${SOURCE_DIR}/processed/
+
+# Change out of the $TMPDIR and remove it
+cd
+rm -rf $TMPDIR
