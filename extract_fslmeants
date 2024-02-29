@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# similar to extract values (2 group) script, but extracts full time series across one group using FSL
+
+subjectlist=$(cat) #defines subject list from .txt file
+
+data_dir= #defines data dir
+output_dir=  #defines where extract time series values are stored
+mask_dir= #defines where mask is located
+mask='ROI_1' #defines mask to be used for fslmeants command
+
+###
+cd $data_dir
+
+for subj in $subjectlist; do
+	echo "Extracting mean time series values from "$subj""
+	fslmeants -i $data_dir/"$subj"_task-visualrun01_space-MNI152NLin6Asym_res-2_desc-preproc_bold_tproj_hipass01_aCompCor6par6_sm6mm_masked.nii.gz -m $mask_dir/"$mask".nii.gz > $output_dir/"$subj"_"$mask"_vis_ts.txt
+
+done
+###
+
