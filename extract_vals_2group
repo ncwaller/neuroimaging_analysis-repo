@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# flexible script for extracting contrast values from predefined regions-of-interest across 2 groups
+
+subjectlist_group1=$(cat) #define group 1 subject list from .txt file
+subjectlist_group2=$(cat) #define group 2 subject list from .txt file
+
+group_dir= #define output directory
+cope_dir= #define where cope/varcope/zstat files are stored
+type='zstat' #define cope/varcope/zstat file type
+task='visual' #define task and contrast
+declare -a ConArray=("vis" "rest" "visminrest" ) #define contrast array to be iterated through, seperated by space
+declare -a ROIArray=("ROI_1" ) #define array of ROIs to be iterated through, seperated by space
+
+###
+cd $group_dir
+
+for ROI_abbrev in ${ROIArray[@]}; do
+	ROI=/...INSERT/"$ROI_abbrev".nii.gz #define where to find ROIs
+
+	for con_abbrev in ${ConArray[@]}; do
+
+		for subj in $subjectlist_group1; do
+			echo "Extracting value from "$subj""
+			fslstats $cope_dir/"$type"_"$subj"_task-"$task"_con-"$con_abbrev".nii.gz -k $ROI -m >> "$con_abbrev"_group1_"$ROI_abbrev"_"$type".txt
+		done
+
+		for subj in $subjectlist_group2; do
+			echo "Extracting value from "$subj""
+			fslstats $cope_dir/"$type"_"$subj"_task-"$task"_con-"$con_abbrev".nii.gz -k $ROI -m >> "$con_abbrev"_group2_"$ROI_abbrev"_"$type".txt
+		done
+
+	done
+done
+###
+
