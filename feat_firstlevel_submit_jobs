@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# submit jobs to FSL FEAT First Level program (requires FSL FEAT and prepared First Level template)
+
+subjectlist=$(cat) #insert path to subjectlist txt file
+featfirstlevel= #insert path to output dir
+feattemplate= #insert path to dir where template file is stored
+
+for subj in $subjectlist; do
+	echo "Running FEAT on "$subj""
+	subname=`echo "$subj" | cut -f1`
+	#taskname=`echo "$subj" | cut -f2`
+	cp $feattemplate/design_template_visual_CORTmicapp.fsf $featfirstlevel/"$subname"_"task-visual".fsf
+	sed -i "s/sub-mic00001/"$subname"/g" $featfirstlevel/"$subname"_"task-visual".fsf
+	#sed -i "s/task-visualrun01/"$taskname"/g" $featfirstlevel/"$subname"_"$taskname".fsf
+	cd $featfirstlevel
+	feat "$subname"_"task-visual".fsf &
+	sleep 10m #10 min isn't fully necessary, but safer to avoid server overload
+done
