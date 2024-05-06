@@ -4,10 +4,10 @@
 ## Designed for any .csv file, organized by groups of interest in labelled columns
 
 # INPUT DATA
-setwd()
+setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-python")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("metric_ofinterest.csv", 
+data_full <- data.frame(read.csv("mihyst_visqst_unpl.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -16,7 +16,7 @@ View(data_full)
 library(psych)
 
 describe(data_full)
-describeBy(data_full$column_1, data_full$column_2)
+describeBy(data_full$fm_score_bsl, data_full$fm_score_6m)
 
 
 # CORRELATIONS
@@ -48,11 +48,17 @@ View(data_rcortable$P)
 
 # SCATTERPLOTS
 library(car)
-scatterplotMatrix(~ WPI + SSS + FM_Score + bpi5 + bpi3, data = data_full, smooth=FALSE)
+scatterplotMatrix(~ fm_score_bsl + vis01_unpl_avg + vis06_unpl_avg, data = data_full, smooth=FALSE)
 
-scatterplot(column_1 ~ column_2, data=data_full,
+scatterplot(fm_score_bsl ~ vis06_unpl_avg, data=data_full,
             xlab="X Axis", ylab="Y Axis",
             main="Title", col="dark blue")
+
+# Adjust Plot View in VS Code
+install.packages("httpgd", repos='http://cran.us.r-project.org')
+
+# Adjust VS Code settings in Command Pallette for JSON View
+# "r.plot.useHttpgd": true
 
 # Normality
 install.packages("dplyr")
