@@ -51,13 +51,13 @@ library(car)
 scatterplotMatrix(~ fm_score_bsl + vis01_unpl_avg + vis06_unpl_avg, data = data_full, smooth=FALSE)
 
 scatterplot(fm_score_bsl ~ vis06_unpl_avg, data=data_full,
-            xlab="X Axis", ylab="Y Axis",
-            main="Title", col="dark blue")
+            xlab="Visual Unpleasantness", ylab="FM Score",
+            main="Vis vs FM Score", col="dark blue")
 
 # Adjust Plot View in VS Code
-install.packages("httpgd", repos='http://cran.us.r-project.org')
+# install.packages("httpgd", repos='http://cran.us.r-project.org')
 
-# Adjust VS Code settings in Command Pallette for JSON View
+# Adjust VS Code settings in Command Pallette for User Setting JSON View
 # "r.plot.useHttpgd": true
 
 # Normality
