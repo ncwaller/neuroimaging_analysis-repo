@@ -157,6 +157,12 @@ boxplot(data_full$fm_score_bsl~data_full$sex_f, # Advanced formatting
         boxwex = .3,                              #make boxes narrower
         ylab = "FM Score",     
         xlab = "Sex",    
+        ylim = c(0,30))   
+boxplot(data_full$fm_score_bsl~data_full$cohort_f,
+        col = "orange", 
+        boxwex = .3,                              #make boxes narrower
+        ylab = "FM Score",     
+        xlab = "Cohort",    
         ylim = c(0,30))     
 
 
