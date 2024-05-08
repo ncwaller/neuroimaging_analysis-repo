@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("3cohort_visQST_allmetrics.csv", 
+data_full <- data.frame(read.csv("5cohort_visQST_allmetrics_outrem.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -102,6 +102,64 @@ rosnerTest(data_full$sss_6m, k = 3, alpha = 0.05)
 ### Group 8
 rosnerTest(data_full$fm_score_6m, k = 3, alpha = 0.05)
 
+# UPDATE ORIGINAL FILE PATH TO "OUTREM" FILE ONCE VALUES ARE REMOVED MANUALLY
+
+
+# VISUALIZE
+## Histograms
+hist(data_full$fm_score_bsl)
+hist(data_full$fm_score_bsl, freq=FALSE) # Density function
+hist(data_full$fm_score_bsl, breaks=2) # Change bin size
+hist(data_full$fm_score_bsl, breaks=10)
+hist(data_full$fm_score_bsl[data_full$sex_f=="Female"],   # Advanced formatting
+     main = "FM Score Histogram - Females",       
+     xlab = "FM Score",   
+     breaks=5,   
+     xlim = range(0:30),                        
+     col = "orange")                           
+
+hist(data_full$wpi_bsl, breaks=20)
+hist(data_full$sss_bsl)
+hist(data_full$pd02_bsl)
+hist(data_full$fm_score_6m)
+hist(data_full$wpi_6m)
+hist(data_full$sss_6m)
+hist(data_full$pd02_6m)
+
+hist(data_full$vis01_unpl_avg)
+hist(data_full$vis02_unpl_avg)
+hist(data_full$vis03_unpl_avg)
+hist(data_full$vis04_unpl_avg)
+hist(data_full$vis05_unpl_avg)
+hist(data_full$vis06_unpl_avg)
+hist(data_full$vis_unpl_avg)
+
+hist(data_full$vis01_bright_avg)
+hist(data_full$vis02_bright_avg)
+hist(data_full$vis03_bright_avg)
+hist(data_full$vis04_bright_avg)
+hist(data_full$vis05_bright_avg)
+hist(data_full$vis06_bright_avg)
+hist(data_full$vis_bright_avg)
+
+## Normality
+#install.packages("dplyr")
+library(dplyr)
+
+shapiro.test(data_full$fm_score_bsl) # Remain cautious with statistical tests for normality
+
+
+## Boxplots
+boxplot(data_full$fm_score_bsl)
+boxplot(data_full$fm_score_bsl~data_full$sex_f)
+boxplot(data_full$fm_score_bsl~data_full$sex_f, # Advanced formatting
+        col = "orange", 
+        boxwex = .3,                              #make boxes narrower
+        ylab = "FM Score",     
+        xlab = "Sex",    
+        ylim = c(0,30))     
+
+
 
 # CORRELATIONS
 ## Pearson: Multiple Functions 
@@ -109,67 +167,20 @@ data_cortable <- cor(data_full[1:10], use = "pairwise", method = "pearson")
 View(data_cortable)
 
 ## Correlation Testing for Significance
-cor.test(data_full$column_1, data_full$column_2, method = "pearson")
+cor.test(data_full$fm_score_bsl, data_full$vis_unpl_avg, method = "pearson")
+cor.test(data_full$fm_score_bsl, data_full$vis_unpl_avg, method = "spearman")
 
-## Correlation Testing for Significance (Spearman)
-cor.test(data_full$high_unpl_corrected, data_full$WPI, method = "spearman")
-
-## Modified Correlation Tables
+## Modified Correlation Tables (automaticaly tests for significance, reports p-values)
 #install.packages("Hmisc")
 library(Hmisc)
-data_rcortable <- rcorr(as.matrix(data_full))
+data_rcortable <- rcorr(as.matrix(data_full)) # IMPORTANT: data_full cannot include non-numerical columns (ex. factorized, cohort)
 data_rcortable
 View(data_rcortable) #3 different tables
 
-## View Tables
 # Extract the correlation coefficients
 data_rcortable$r
 View(data_rcortable$r)
 # Extract p-values
 data_rcortable$P
 View(data_rcortable$P)
-
-
-# SCATTERPLOTS
-library(car)
-scatterplotMatrix(~ fm_score_bsl + vis01_unpl_avg + vis06_unpl_avg, data = data_full, smooth=FALSE)
-
-scatterplot(fm_score_bsl ~ vis06_unpl_avg, data=data_full,
-            xlab="Visual Unpleasantness", ylab="FM Score",
-            main="Vis vs FM Score", col="dark blue")
-
-# Adjust Plot View in VS Code
-# install.packages("httpgd", repos='http://cran.us.r-project.org')
-
-# Adjust VS Code settings in Command Pallette for User Setting JSON View
-# "r.plot.useHttpgd": true
-
-# Normality
-install.packages("dplyr")
-library(dplyr)
-
-shapiro.test(data_full$age)
-shapiro.test(data_full$high_unpl_corrected)
-
-## Visualize
-hist(data_full$FM_Score)
-hist(data_full$WPI)
-hist(data_full$SSS)
-hist(data_full$bpi5)
-hist(data_full$bpi3)
-hist(data_full$high_unpl_corrected)
-hist(data_full$high_bright_corrected)
-hist(data_full$avg_unpl_corrected)
-hist(data_full$avg_bright_corrected)
-
-hist(data_full$vis_0.1_unpl_avg)
-hist(data_full$vis_0.2_unpl_avg)
-hist(data_full$vis_0.4_unpl_avg)
-hist(data_full$vis_0.6_unpl_avg)
-hist(data_full$vis_0.8_unpl_avg)
-hist(data_full$vis_1.0_unpl_avg)
-
-
-
-
 
