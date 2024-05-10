@@ -174,3 +174,26 @@ View(data_rcortable$r)
 data_rcortable$P
 View(data_rcortable$P)
 
+
+# ANOVA
+## One-Way
+results1 <- aov(fm_score ~ cohort_f, data = data_full)   #aov is a wrapper for lm()
+
+## View Results in ANOVA Style
+results1
+summary(results1)
+
+## Adjustments for Heterogeneity of Variance
+### There is an na.action option
+oneway.test(fm_score ~ cohort_f, data = data_full, var.equal = TRUE)   #same as aov()
+oneway.test(fm_score ~ cohort_f, data = data_full, var.equal = FALSE)  #Welch's F-test
+
+### Tukey Multcomp
+post_tuk1 <- TukeyHSD(results1, which = "cohort_f")
+post_tuk1
+
+### Better
+#install.packages("multcomp", repos='http://cran.us.r-project.org')
+library(multcomp)
+post_tuk2 <- glht(results1, linfct = mcp(cohort_f = "Tukey"))
+summary(post_tuk2)
