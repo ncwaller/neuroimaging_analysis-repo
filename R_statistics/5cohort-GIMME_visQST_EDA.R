@@ -14,6 +14,7 @@ View(data_full)
 ## Format sex and cohort as a factor
 data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
 data_full$cohort_f <- factor(data_full$cohort, levels=c(1:5), labels=c("RA", "CTS", "OA", "CPP", "PSA"))
+data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
 
 # EXPLORE DATA
@@ -21,7 +22,7 @@ data_full$cohort_f <- factor(data_full$cohort, levels=c(1:5), labels=c("RA", "CT
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$fm_score_bsl, data_full$sex_f) # by grouping variable and output
+describeBy(data_full$fm_score_bsl, data_full$responder_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
@@ -165,7 +166,21 @@ boxplot(data_full$fm_score_bsl~data_full$cohort_f,
         xlab = "Cohort",    
         ylim = c(0,30))     
 
+#data_full$cohort_f <- factor(data_full$cohort_f , levels=c("HC", "CTS", "OA", "RA", "CPP", "PSA", "FM")) # reorder
+boxplot(data_full$fm_score_bsl~data_full$responder_f,
+        col = c("red", "darkgreen"), 
+        boxwex = .5,                              
+        ylab = "FM Score",     
+        xlab = "Responder",    
+        ylim = c(0,30)) 
 
+
+boxplot(data_full$vis_bright_avg~data_full$responder_f,
+        col = c("red", "darkgreen"), 
+        boxwex = .5,                              
+        ylab = "FM Score",     
+        xlab = "Responder",    
+        ylim = c(0,100)) 
 
 # CORRELATIONS
 ## Pearson: Multiple Functions 
@@ -189,4 +204,5 @@ View(data_rcortable$r)
 # Extract p-values
 data_rcortable$P
 View(data_rcortable$P)
+
 
