@@ -7,13 +7,13 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("5cohort_visQST_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("7cohort_visQST_allmetrics.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Format sex and cohort as a factor
 data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
-data_full$cohort_f <- factor(data_full$cohort, levels=c(1:5), labels=c("RA", "CTS", "OA", "CPP", "PSA"))
+data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
 
@@ -22,7 +22,7 @@ data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$fm_score_bsl, data_full$responder_f) # by grouping variable and output
+describeBy(data_full$fm_score_bsl, data_full$cohort_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
@@ -70,6 +70,8 @@ rosnerTest(data_full$vis04_unpl_avg, k = 3, alpha = 0.05)
 rosnerTest(data_full$vis05_unpl_avg, k = 3, alpha = 0.05)
 ### Group 6
 rosnerTest(data_full$vis06_unpl_avg, k = 3, alpha = 0.05)
+### Group 7
+rosnerTest(data_full$vis_unpl_avg, k = 3, alpha = 0.05)
 
 ### Visual Brightness
 ### Group 1
@@ -84,8 +86,11 @@ rosnerTest(data_full$vis04_bright_avg, k = 3, alpha = 0.05)
 rosnerTest(data_full$vis05_bright_avg, k = 3, alpha = 0.05)
 ### Group 6
 rosnerTest(data_full$vis06_bright_avg, k = 3, alpha = 0.05)
+### Group 7
+rosnerTest(data_full$vis_bright_avg, k = 3, alpha = 0.05)
 
 ### PDQ, WPI, SSS, FM Score
+# Can screen here, but might want to screen on the clinical BSL sheet for more N
 ### Group 1
 rosnerTest(data_full$pd02_bsl, k = 3, alpha = 0.05)
 ### Group 2
@@ -207,69 +212,3 @@ View(data_rcortable$r)
 # Extract p-values
 data_rcortable$P
 View(data_rcortable$P)
-
-
-
-# Linear Mixed Model template
-## Designed for any .csv file, organized by groups of interest in labelled columns
-
-# ============================================================================== 
-
-install.packages("lme4")
-install.packages("merDerive")
-install.packages("ggeffects")
-
-library(lme4) 
-library(merDeriv) 
-library(ggeffects) 
-
-cohortf <- factor(data_full$cohort, levels = c(1:5), labels = c("HC", "CTS", "RA", "OA", "FM"))
-illuminance_levelf <- factor(data_full$illuminance_level, levels = c(1:6), labels = c("1", "2", "3", "4", "5", "6"))
-
-#cohort effect
-data_full.null = lmer(bright_rating ~ sex + age + illuminance_level +
-                         (1|subid), data=data_full, REML=FALSE)
-
-data_full.model = lmer(bright_rating ~ sex + age + cohortf + illuminance_level +
-                         (1|subid), data=data_full, REML=FALSE)
-data_full.model
-
-anova(data_full.null,data_full.model) #compare the two models (effect of cohort)
-
-coef(data_full.model)
-
-#illuminance effect
-data_full.null = lmer(bright_rating ~ sex + age + cohortf +
-                        (1|subid), data=data_full, REML=FALSE)
-
-data_full.model = lmer(bright_rating ~ sex + age + cohortf + illuminance_level +
-                         (1|subid), data=data_full, REML=FALSE)
-data_full.model
-
-anova(data_full.null,data_full.model) #compare the two models (effect of illuminance)
-
-
-
-#interaction effect of illuminance x group
-data_full.null = lmer(bright_rating ~ sex + age + cohortf + illuminance_level +
-                        (1|subid), data=data_full, REML=FALSE)
-
-data_full.model = lmer(bright_rating ~ sex + age + cohortf * illuminance_level +
-                         (1|subid), data=data_full, REML=FALSE)
-data_full.model
-
-anova(data_full.null,data_full.model) #compare the two models (effect of illuminance)
-
-
-#full, all-in-one model
-data_full.model = lmer(bright_rating ~ sex + age + cohortf + cohortf * illuminance_levelf +
-                         (1|subid), data=data_full, REML=FALSE)
-
-data_full.model
-coef(data_full.model)
-
-library(emmeans)
-options(max.print = 999999999)
-emmeans(data_full.model, list(pairwise ~ cohortf), adjust = "tukey")
-emmeans(data_full.model, list(pairwise ~ illuminance_levelf), adjust = "tukey")
-emmeans(data_full.model, list(pairwise ~ cohortf * illuminance_levelf), adjust = "tukey")
