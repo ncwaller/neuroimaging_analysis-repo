@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visQST_allmetrics.csv", 
+data_full <- data.frame(read.csv("7cohort_visQST_allmetrics_outrem.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -16,13 +16,17 @@ data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female
 data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
+## Create subframe based on baseline PDQ 02 of 3 or greater
+data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
+
+View(data_bslpd02_subset)
 
 # EXPLORE DATA
 ## Descriptives
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$fm_score_bsl, data_full$cohort_f) # by grouping variable and output
+describeBy(data_full$fm_score_bsl, data_full$responder_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
@@ -38,7 +42,7 @@ scatterplotMatrix(~ pd02_bsl + wpi_bsl + sss_bsl + fm_score_bsl +
                     pd02_6m + wpi_6m + sss_6m + fm_score_6m, data = data_full, smooth=FALSE)
 
 ## Single scatterplots for in-depth investigating
-scatterplot(vis_unpl_avg ~ fm_score_bsl, data=data_full,
+scatterplot(vis06_unpl_avg ~ fm_score_bsl, data=data_full,
             ylab="Visual Unpleasantness", xlab="FM Score",
             main="Visual Unpleasantness vs FM Score", col="dark blue")
 
@@ -172,7 +176,7 @@ boxplot(data_full$fm_score_bsl~data_full$cohort_f,
         ylim = c(0,30))     
 
 #data_full$cohort_f <- factor(data_full$cohort_f , levels=c("HC", "CTS", "OA", "RA", "CPP", "PSA", "FM")) # reorder
-boxplot(data_full$fm_score_bsl~data_full$responder_f,
+boxplot(data_bslpd02_subset$fm_score_bsl~data_bslpd02_subset$responder_f,
         col = c("red", "darkgreen"), 
         boxwex = .5,                              
         ylab = "FM Score",     
@@ -180,15 +184,16 @@ boxplot(data_full$fm_score_bsl~data_full$responder_f,
         ylim = c(0,30)) 
 
 
-boxplot(data_full$vis_bright_avg~data_full$responder_f,
+boxplot(data_bslpd02_subset$vis_unpl_avg~data_bslpd02_subset$responder_f,
         col = c("red", "darkgreen"), 
         boxwex = .5,                              
         ylab = "Vis Metric",     
         xlab = "Responder",    
         ylim = c(0,100)) 
 
-# T Test
-t.test(vis06_unpl_avg ~ responder_f, data = data_full)
+# T Tests
+t.test(vis06_unpl_avg ~ responder_f, data = data_bslpd02_subset)
+t.test(fm_score_bsl ~ responder_f, data = data_bslpd02_subset)
 
 # CORRELATIONS
 ## Pearson: Multiple Functions 
@@ -196,7 +201,7 @@ data_cortable <- cor(data_full[1:10], use = "pairwise", method = "pearson")
 View(data_cortable)
 
 ## Correlation Testing for Significance
-cor.test(data_full$fm_score_bsl, data_full$vis_unpl_avg, method = "pearson")
+cor.test(data_full$fm_score_bsl, data_full$vis06_unpl_avg, method = "pearson")
 cor.test(data_full$fm_score_bsl, data_full$vis_unpl_avg, method = "spearman")
 
 ## Modified Correlation Tables (automaticaly tests for significance, reports p-values)
