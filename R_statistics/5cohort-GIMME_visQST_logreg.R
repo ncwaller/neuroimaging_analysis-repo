@@ -1,6 +1,6 @@
 #! R
 
-# Logistice Regression (Non-Machine Learning Approach)
+# Logistic Regression (Non-Machine Learning Approach)
 ## Applied to 5 Cohort GIMME Project - visual QST + clinical measures - to predict responders to treatment
 
 # INPUT DATA
@@ -71,3 +71,7 @@ model02
 model12 <- anova(model1, model2)
 model12
 1 - pchisq(.0019835, 1) #no, so select Intervention model
+
+
+# More assumption need to be checked, but this model is not performing in any case. Yet.
+# Check Beltz code for more detail as needed.
