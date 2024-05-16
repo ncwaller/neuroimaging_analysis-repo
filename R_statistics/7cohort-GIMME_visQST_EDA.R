@@ -176,7 +176,7 @@ boxplot(data_full$fm_score_bsl~data_full$cohort_f,
         ylim = c(0,30))     
 
 #data_full$cohort_f <- factor(data_full$cohort_f , levels=c("HC", "CTS", "OA", "RA", "CPP", "PSA", "FM")) # reorder
-boxplot(data_bslpd02_subset$fm_score_bsl~data_bslpd02_subset$responder_f,
+boxplot(data_full$fm_score_bsl~data_full$responder_f,
         col = c("red", "darkgreen"), 
         boxwex = .5,                              
         ylab = "FM Score",     
@@ -184,7 +184,7 @@ boxplot(data_bslpd02_subset$fm_score_bsl~data_bslpd02_subset$responder_f,
         ylim = c(0,30)) 
 
 
-boxplot(data_bslpd02_subset$vis_unpl_avg~data_bslpd02_subset$responder_f,
+boxplot(data_full$vis_bright_avg~data_full$responder_f,
         col = c("red", "darkgreen"), 
         boxwex = .5,                              
         ylab = "Vis Metric",     
@@ -192,8 +192,8 @@ boxplot(data_bslpd02_subset$vis_unpl_avg~data_bslpd02_subset$responder_f,
         ylim = c(0,100)) 
 
 # T Tests
-t.test(vis06_unpl_avg ~ responder_f, data = data_bslpd02_subset)
-t.test(fm_score_bsl ~ responder_f, data = data_bslpd02_subset)
+t.test(vis_bright_avg ~ responder_f, data = data_full)
+t.test(fm_score_bsl ~ responder_f, data = data_full)
 
 # CORRELATIONS
 ## Pearson: Multiple Functions 

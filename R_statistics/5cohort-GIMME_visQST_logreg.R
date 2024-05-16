@@ -53,7 +53,7 @@ exp(model1$coefficients)
 model01 <- anova(model0, model1)
 model01
 ?pchisq
-1 - pchisq(1.21, 1) #no, according to chi-squre distribution. input deviance difference.
+1 - pchisq(2.43, 1) #no, according to chi-squre distribution. input deviance difference.
 
 ## Model 2 with 2 continuous predictors (vis_unpl and fm_score) 
 model2 <- glm(responder_f ~ vis_unpl_avg + fm_score_bsl + pd02_bsl, data = data_full, family = binomial())
