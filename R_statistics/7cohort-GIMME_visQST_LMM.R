@@ -1,7 +1,7 @@
 #! R
 
 # Descriptive Statistics, Correlation Matrices, and Scatterplot Analysis
-## Applied to 3 Cohort GIMME Project - visual QST + clinical measures
+## Applied to 7 Cohort GIMME Project - visual QST + clinical measures
 
 # ==============================================================================
 
@@ -47,9 +47,95 @@ library(merDeriv)
 library(ggeffects) 
 
 
+# Dependent variable: Visual Unpleasantness Rating
+# Fixed effects: Cohort, Sex, Age
+# Random effect: Subject, Illuminance Level
+
+data_lmm_long.null = lmer(rating ~ sex + age +
+                        (1|subid), data=data_lmm_long, REML=FALSE)
+data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + (1|illuminance_level) +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+data_lmm_long.model
+
+anova(data_lmm_long.null,data_lmm_long.model) #compare the two models (effect of cohort)
+
+# Subframe into 2 Cohorts
+data_lmm_long_2group = data_lmm_long[data_lmm_long$cohort_f=="HC" | data_lmm_long$cohort_f=="RA",]
+
+View(data_lmm_long_2group)
+
+# LMM
+data_lmm_long_2group.model = lmer(rating ~ illuminance_level +
+                        (1|subid), data=data_lmm_long_2group, REML=FALSE) 
+                        # simplest model, not checking cohort differences yet or accounting for age and sex
+                        # includes a random effect for subjects and fixed effect for illuminance level
+                        # DV is rating
+
+data_lmm_long_2group.model = lmer(rating ~ illuminance_level +
+                        (1 + illuminance_level | subid), data=data_lmm_long_2group, REML=FALSE) 
+                        # next step, add random slopes for difference in effects of illuminance level between subjects
+                        # won't work given number of observations (it's too complicated for the dataset)
+
+# Effect of Cohort
+
+data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level +
+                        (1|subid), data=data_lmm_long_2group, REML=FALSE)
+                        # add age and sex as fixed effects, and establish null model
+                
+data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level + cohort_f +
+                        (1|subid), data=data_lmm_long_2group, REML=FALSE)
+                        # add cohort fixed effect
+                        
+data_lmm_long_2group.model # check model
+anova(data_lmm_long_2group.null,data_lmm_long_2group.model) #compare the two models (effect of cohort between HC and RA)
+
+
+# Effect of Interaction Between Cohort and Illuminance Level
+
+data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level + cohort_f +
+                        (1|subid), data=data_lmm_long_2group, REML=FALSE) 
+
+data_lmm_long_2group.model = lmer(rating ~ sex + age + illuminance_level * cohort_f +
+                        (1|subid), data=data_lmm_long_2group, REML=FALSE) 
+                        # add interaction term between illuminance level and cohort
+                        # includes a random effect for subjects and fixed effect for illuminance level
+
+data_lmm_long_2group.model # check model
+coef(data_lmm_long_2group.model) # check coefficients
+anova(data_lmm_long_2group.null,data_lmm_long_2group.model) #compare the two models (effect of interaction between HC and RA
+
+
+
+
+data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level +
+                        (1|subid), data=data_lmm_long_2group, REML=FALSE)
+data_lmm_long_2group.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
+                         (1|subid), data=data_lmm_long_2group, REML=FALSE)
+data_lmm_long_2group.model
+
+coef(data_lmm_long_2group.model)
+
+anova(data_lmm_long_2group.null,data_lmm_long_2group.model) #compare the two models (effect of cohort)
+
+# Random Slopes for Subject
+
+data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level +
+                        (1 + cohort_f | subid), data=data_lmm_long_2group, REML=FALSE)
+data_lmm_long_2group.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
+                         (1 + cohort_f | subid), data=data_lmm_long_2group, REML=FALSE)
+data_lmm_long_2group.model
+
+coef(data_lmm_long_2group.model)
+
+anova(data_lmm_long_2group.null,data_lmm_long_2group.model) #compare the two models (effect of cohort)
+
+
+#######
+
 #cohort effect
 data_lmm_long.null = lmer(rating ~ sex + age + illuminance_level +
-                         (1|subid), data=data_lmm_long, REML=FALSE)
+                         (1|subid), data=data_lmm_long, REML=FALSE) # include random effect for participants to avoid psuedoreplication
+
 
 data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
@@ -68,6 +154,7 @@ data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
 data_lmm_long.model
 
 anova(data_lmm_long.null,data_lmm_long.model) #compare the two models (effect of illuminance)
+
 
 
 #interaction effect of illuminance x group
