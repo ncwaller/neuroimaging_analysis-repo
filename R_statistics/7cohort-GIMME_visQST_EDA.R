@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visQST_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("7cohort_clinical_bsl_allmetrics_outrem.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -111,6 +111,15 @@ rosnerTest(data_full$wpi_6m, k = 3, alpha = 0.05)
 rosnerTest(data_full$sss_6m, k = 3, alpha = 0.05)
 ### Group 8
 rosnerTest(data_full$fm_score_6m, k = 3, alpha = 0.05)
+
+### Group 1
+rosnerTest(data_full$pd02, k = 3, alpha = 0.05)
+### Group 2
+rosnerTest(data_full$wpi, k = 3, alpha = 0.05)
+### Group 3
+rosnerTest(data_full$sss, k = 3, alpha = 0.05)
+### Group 4
+rosnerTest(data_full$fm_score, k = 3, alpha = 0.05)
 
 # UPDATE ORIGINAL FILE PATH TO "OUTREM" FILE ONCE VALUES ARE REMOVED MANUALLY
 
