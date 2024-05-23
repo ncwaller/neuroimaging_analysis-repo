@@ -210,7 +210,7 @@ data_cortable <- cor(data_full[1:10], use = "pairwise", method = "pearson")
 View(data_cortable)
 
 ## Correlation Testing for Significance
-cor.test(data_full$fm_score_bsl, data_full$vis06_unpl_avg, method = "pearson")
+cor.test(data_full$sss_bsl, data_full$vis_bright_avg, method = "pearson")
 
 cor.test(data_full$fm_score_bsl, data_full$vis_unpl_avg, method = "spearman")
 
