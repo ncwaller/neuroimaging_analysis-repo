@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_clinical_bsl_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("7cohort_visqst_allmetrics_outrem_sacorr.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -211,6 +211,7 @@ View(data_cortable)
 
 ## Correlation Testing for Significance
 cor.test(data_full$fm_score_bsl, data_full$vis06_unpl_avg, method = "pearson")
+
 cor.test(data_full$fm_score_bsl, data_full$vis_unpl_avg, method = "spearman")
 
 ## Modified Correlation Tables (automaticaly tests for significance, reports p-values)
