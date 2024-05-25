@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visqst_allmetrics_outrem_sacorr.csv", 
+data_full <- data.frame(read.csv("7cohort_visqst_allmetrics_outrem.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -193,12 +193,12 @@ boxplot(data_full$fm_score_bsl~data_full$responder_f,
         ylim = c(0,30)) 
 
 
-boxplot(data_full$vis_bright_avg~data_full$responder_f,
+boxplot(data_full$vis_sensitivity_ratio~data_full$cohort_f,
         col = c("red", "darkgreen"), 
         boxwex = .5,                              
         ylab = "Vis Metric",     
         xlab = "Responder",    
-        ylim = c(0,100)) 
+        ylim = c(0,4)) 
 
 # T Tests
 t.test(vis_bright_avg ~ responder_f, data = data_full)
