@@ -21,9 +21,17 @@ data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female
 data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
+## Create subframe based on baseline PDQ02 of 3 or greater
+data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
 
 # ASSUMPTIONS (BY GROUP)
 ## Normality
+#####install.packages("pastecs", repos='http://cran.us.r-project.org')
+#####install.packages("httpgd", repos='http://cran.us.r-project.org')
+
+## Basic check to see if the covariate and DV are related at all 
+cor.test(data_bslpd02_subset$fm_score_bsl, data_bslpd02_subset$pd02_bsl, method = "pearson")
+
 library(pastecs)
 ### For IV
 by(data_full$vis_unpl_avg, data_full$responder_f, stat.desc, norm = TRUE)
@@ -31,26 +39,77 @@ by(data_full$vis_unpl_avg, data_full$responder_f, stat.desc, norm = TRUE)
 stat.desc(data_full$pd02_bsl)
 
 ## Homogeneity of Variance
-boxplot(data_full$vis_unpl_avg~data_full$responder_f)
+boxplot(data_bslpd02_subset$fm_score_bsl~data_bslpd02_subset$responder_f)
 
 ## Covariate-IV Independence
 ### Test for significant IV differences in covariate
-assump_ind <- aov(pd02_bsl ~ responder_f, data = data_full)
+assump_ind <- aov(pd02_bsl ~ responder_f, data = data_bslpd02_subset)
 summary(assump_ind)
 
 ## Homogeneity of Slopes
 ### Preview ANCOVA with IV*covariate interaction term
-assump_slope <- aov(vis_unpl_avg ~ responder_f * pd02_bsl, data = data_full)
+assump_slope <- aov(fm_score_bsl ~ responder_f * pd02_bsl, data = data_full)
 summary(assump_slope)
 
+## Alternate
+m1 <- lm(fm_score_bsl ~ pd02_bsl + responder_f, data = data_bslpd02_subset)
+m2 <- lm(fm_score_bsl ~ pd02_bsl * responder_f, data = data_bslpd02_subset)
+anova(m1, m2)
 
-# CONTRASTS
-## Prioritize Orthogonality
-contrasts(data_full$responder_f) <- cbind(-1, 1) # tough to understand
-data_full$responder_f
+
+# RUNNING ANCOVA
+
+#####install.packages("tidyverse", repos='http://cran.us.r-project.org')
+#####install.packages("ggpubr", repos='http://cran.us.r-project.org')
+#####install.packages("rstatix", repos='http://cran.us.r-project.org')
+#####install.packages("broom", repos='http://cran.us.r-project.org')
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(broom)
+
+## ANCOVA Function
+res.aov <- data_bslpd02_subset %>% anova_test(fm_score_bsl ~ pd02_bsl + responder_f)
+get_anova_table(res.aov)
+
+# Pairwise comparisons
+#####install.packages("emmeans", repos='http://cran.us.r-project.org')
+library(emmeans)
+
+pwc <- data_full %>% 
+  emmeans_test(
+    fm_score_bsl ~ responder_f, covariate = pd02_bsl,
+    p.adjust.method = "bonferroni"
+    )
+pwc
+
+################################################################################################
+
+## Alternate ANOVA vs ANCOVA Workflow (LMs) (allows for comparison of R2, etc)
+
+summary(lm(fm_score_bsl ~ responder_f, data=data_bslpd02_subset)) # ANOVA
+
+summary(lm(fm_score_bsl ~ pd02_bsl + responder_f, data=data_bslpd02_subset)) # ANCOVA
 
 
-# ANCOVA (remember Type I SS is the default)
+#####install.packages("car", repos='http://cran.us.r-project.org')
+library(car)
+
+# getting the sums squared for each effect using the ANOVA function from the car package
+sstable <- car::Anova(lm(fm_score_bsl ~ pd02_bsl + responder_f, data=data_bslpd02_subset), type = 3)
+# partial eta squared:
+sstable$pes <- c(sstable$'Sum Sq'[-nrow(sstable)], NA)/(sstable$'Sum Sq' + sstable$'Sum Sq'[nrow(sstable)]) # SS for each effect divided by the last SS (SS_residual)
+sstable
+
+# Useful for determining the impact that each component has on the DV - PES size depends on the field, but .15 is pretty good
+
+
+
+################################################################################################
+
+## Alternate ANCOVA Workflow
+
+# ANCOVA (Type I SS is the default)
 ## Without Covariate for Comparison
 anova_comp <- aov(vis_unpl_avg ~ responder_f, data = data_full)
 summary(anova_comp) # no group difference - so what if we control for baseline pain
@@ -68,6 +127,7 @@ Anova(ancova1, type = "III")
 #####install.packages("rstatix")
 library(rstatix)
 ?emmeans_test
+
 ### Conduct post hoc tests with Bonferoni adjustment
 posthoc <- emmeans_test(vis_unpl_avg ~ responder_f, covariate = pd02_bsl,
                         p.adjust.method = "bonferroni", data=data_full)
