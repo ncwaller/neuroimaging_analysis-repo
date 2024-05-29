@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visQST_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("7cohort_visQST_allmetrics_outrem_forLogReg.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -15,6 +15,29 @@ View(data_full)
 data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
 data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
+
+## Create subframe based on baseline PDQ02 of 3 or greater
+data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
+
+View(data_bslpd02_subset)
+
+################################################################################################
+
+#####install.packages("aod", repos='http://cran.us.r-project.org')
+library(aod)
+
+mylogit <- glm(responder_f ~ vis_unpl_avg + vis_bright_avg + fm_score_bsl, data = data_bslpd02_subset, family = "binomial")
+summary(mylogit)
+
+confint(mylogit) # confidence intervals
+
+
+
+
+
+
+################################################################################################
+
 
 ### R assigns factor levels alphabetically, but we want to determine baseline (0 group)
 levels(data_full$responder_f) # Non-responder is first and will be baseline
