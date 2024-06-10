@@ -13,7 +13,7 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("7cohort_visQST_sens_respvnon_forLMM.csv", 
+data_lmm <- data.frame(read.csv("7cohort_visQST_bright_forLMM.csv", 
                                  header = T, sep = ","))
 View(data_lmm)
 
@@ -32,18 +32,18 @@ library(tidyr)
 # - value: Name of new value column
 # - ...: Names of source columns that contain values
 # - factor_key: Treat the new key column as a factor (instead of character vector)
-data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_sensitivity_avg:vis06_sensitivity_avg, factor_key=TRUE)
+data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_bright_avg:vis06_bright_avg, factor_key=TRUE)
 data_lmm_long = data_lmm_long[order(data_lmm_long$subid),] # sort by subid
 
 View(data_lmm_long)
 
 # Remove CTS (causing problems with such low N)
-data_lmm_long = data_lmm_long[!data_lmm_long$cohort_f=="CTS",]
+data_lmm_long = data_lmm_long[!data_lmm_long$cohort_f=="PSA",]
 
 # INSTALL
 #install.packages("lme4", repos='http://cran.us.r-project.org')
-#install.packages("merDerive", repos='http://cran.us.r-project.org')
-#install.packages("ggeffects", repos='http://cran.us.r-project.org')
+install.packages("merDerive", repos='http://cran.us.r-project.org')
+install.packages("ggeffects", repos='http://cran.us.r-project.org')
 
 library(lme4) 
 library(merDeriv) 
@@ -189,10 +189,15 @@ coef(data_lmm_long_2group.model) # check coefficients
 
 #full, all-in-one model
 ## not as useful for comparisons, but can pull the emmeans for tukey post-hocs averaged across cohort or illuminance
-data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + cohort_f * illuminance_level +
+data_lmm_long.null = lmer(rating ~ sex + age + cohort_f + illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ sex + age + cohort_f * illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
 data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
 coef(data_lmm_long.model)
 
 library(emmeans)
