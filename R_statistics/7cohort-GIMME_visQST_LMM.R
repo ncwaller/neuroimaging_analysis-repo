@@ -13,7 +13,7 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("7cohort_visQST_bright_forLMM.csv", 
+data_lmm <- data.frame(read.csv("7cohort_visQST_bright_respvnon_forLMM.csv", 
                                  header = T, sep = ","))
 View(data_lmm)
 
@@ -37,13 +37,13 @@ data_lmm_long = data_lmm_long[order(data_lmm_long$subid),] # sort by subid
 
 View(data_lmm_long)
 
-# Remove CTS (causing problems with such low N)
+# Remove Specific Cohort
 data_lmm_long = data_lmm_long[!data_lmm_long$cohort_f=="PSA",]
 
 # INSTALL
 #install.packages("lme4", repos='http://cran.us.r-project.org')
-install.packages("merDerive", repos='http://cran.us.r-project.org')
-install.packages("ggeffects", repos='http://cran.us.r-project.org')
+#install.packages("merDerive", repos='http://cran.us.r-project.org')
+#install.packages("ggeffects", repos='http://cran.us.r-project.org')
 
 library(lme4) 
 library(merDeriv) 
