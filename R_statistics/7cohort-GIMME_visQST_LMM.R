@@ -107,11 +107,11 @@ View(data_lmm_long_2group)
 
 # Effect of Cohort
 
-data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level +
+data_lmm_long_2group.null = lmer(rating ~ age + sex + illuminance_level +
                         (1|subid), data=data_lmm_long_2group, REML=FALSE)
                         # add age and sex as fixed effects, and establish null model
                 
-data_lmm_long_2group.model = lmer(rating ~ sex + age + illuminance_level + cohort_f +
+data_lmm_long_2group.model = lmer(rating ~ age + sex + illuminance_level + cohort_f +
                         (1|subid), data=data_lmm_long_2group, REML=FALSE)
                         # add cohort fixed effect
                         
@@ -121,10 +121,10 @@ anova(data_lmm_long_2group.null,data_lmm_long_2group.model) #compare the two mod
 
 # Effect of Interaction Between Cohort and Illuminance Level
 
-data_lmm_long_2group.null = lmer(rating ~ sex + age + illuminance_level + cohort_f +
+data_lmm_long_2group.null = lmer(rating ~ age + sex + illuminance_level + cohort_f +
                         (1|subid), data=data_lmm_long_2group, REML=FALSE) 
 
-data_lmm_long_2group.model = lmer(rating ~ sex + age + illuminance_level * cohort_f +
+data_lmm_long_2group.model = lmer(rating ~ age + sex + illuminance_level * cohort_f +
                         (1|subid), data=data_lmm_long_2group, REML=FALSE) 
                         # add interaction term between illuminance level and cohort
                         # includes a random effect for subjects and fixed effect for illuminance level
