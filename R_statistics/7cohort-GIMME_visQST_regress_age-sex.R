@@ -5,10 +5,10 @@
 
 # INPUT DATA
 ## Set Working Directory
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visqst_allmetrics_outrem_forSAregress.csv", 
+data_full <- data.frame(read.csv("visqst_bright-only_outrem.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -67,7 +67,7 @@ data_full$vis_unpl_avg_res <- resid(step7_model) #getting residuals
 data_full$vis_unpl_avg_mean <- mean(data_full$vis_unpl_avg)
 data_full$vis_unpl_avg_corrected <- data_full$vis_unpl_avg_mean+data_full$vis_unpl_avg_res
 
-write.csv(data_full, "/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code/7cohort_visqst_allmetrics_outrem_forSAregress_UNPL.csv")
+write.csv(data_full, "/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code/visqst_unpl-only_outrem_SAcorr.csv")
 
 ## Bright
 ## Enter Both Predictors (Sex & Age) for Measure of Interest (ex. QST response, imaging contrast)
@@ -121,4 +121,4 @@ data_full$vis_bright_avg_res <- resid(step7_model) #getting residuals
 data_full$vis_bright_avg_mean <- mean(data_full$vis_bright_avg)
 data_full$vis_bright_avg_corrected <- data_full$vis_bright_avg_mean+data_full$vis_bright_avg_res
 
-write.csv(data_full, "/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code/7cohort_visqst_allmetrics_outrem_forSAregress_BRIGHT.csv")
+write.csv(data_full, "/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code/visqst_bright-only_outrem_SAcorr.csv")
