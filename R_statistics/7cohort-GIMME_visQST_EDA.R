@@ -1,19 +1,19 @@
 #! R
 
 # Descriptive Statistics, Correlation Matrices, and Scatterplot Analysis
-## Applied to 3 Cohort GIMME Project - visual QST + clinical measures
+## Applied to 7 Cohort - visual QST
 
 # INPUT DATA
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visqst_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("all_visqst_bsl_outrem.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Format sex and cohort as a factor
-data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
-data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
+data_full$sex_f <- factor(data_full$sex, levels=c(1:2), labels=c("Male", "Female"))
+data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
 ## Create subframe based on baseline PDQ 02 of 3 or greater
@@ -26,7 +26,7 @@ View(data_bslpd02_subset)
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$fm_score_bsl, data_full$responder_f) # by grouping variable and output
+describeBy(data_full$age, data_full$responder_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
