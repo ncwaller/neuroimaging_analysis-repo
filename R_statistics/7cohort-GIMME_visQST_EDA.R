@@ -26,7 +26,7 @@ View(data_bslpd02_subset)
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$age, data_full$responder_f) # by grouping variable and output
+describeBy(data_full$sss_bsl, data_full$cohort_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
