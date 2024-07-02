@@ -4,15 +4,15 @@
 ## Applied to 7 Cohort - clinical measures
 
 # INPUT DATA
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_clinical_bsl_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("all_clinical_bsl.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Format sex and cohort as a factor
-data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
+data_full$sex_f <- factor(data_full$sex, levels=c(1:2), labels=c("Male", "Female"))
 data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM"))
 
 
@@ -43,6 +43,9 @@ scatterplot(fm_score ~ pd02, data=data_full,
 
 # TESTING FOR OUTLIERS
 ## Import Relevant R Packages
+#install.packages("EnvStats", repos='http://cran.us.r-project.org')
+#install.packages("outliers", repos='http://cran.us.r-project.org')
+
 ?grubbs.test
 ?rosnerTest # iterative Grubbs Test - preferred option for QST data
 library(EnvStats)
