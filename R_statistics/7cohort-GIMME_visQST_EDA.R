@@ -7,26 +7,37 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("all_visqst_bsl_outrem.csv", 
+data_full <- data.frame(read.csv("all_thumbqst_bsl.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Format sex and cohort as a factor
-data_full$sex_f <- factor(data_full$sex, levels=c(1:2), labels=c("Male", "Female"))
+data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
 data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
+
+data_full$cohort_f <- factor(data_full$COHORT, levels=c(1:5), labels=c("HC", "FM", "OA", "CTS", "RA")) # for thumb data
 
 ## Create subframe based on baseline PDQ 02 of 3 or greater
 data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
 
 View(data_bslpd02_subset)
 
+# Remove Specific Cohort
+data_bslpd02_subset = data_bslpd02_subset[!data_bslpd02_subset$cohort_f=="CPP",]
+
+# Onle Specific Cohort
+data_thumb_subset = data_full[data_full$cohort_f=="FM",]
+
+### Group 1
+rosnerTest(data_thumb_subset$asc_ppt_0, k = 3, alpha = 0.05)
+
 # EXPLORE DATA
 ## Descriptives
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$sss_bsl, data_full$cohort_f) # by grouping variable and output
+describeBy(data_bslpd02_subset$fm_score_bsl, data_bslpd02_subset$responder_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
@@ -96,7 +107,7 @@ rosnerTest(data_full$vis_bright_avg, k = 3, alpha = 0.05)
 ### PDQ, WPI, SSS, FM Score
 # Can screen here, but might want to screen on the clinical BSL sheet for more N
 ### Group 1
-rosnerTest(data_full$pd02_bsl, k = 3, alpha = 0.05)
+rosnerTest(data_thumb_subset$asc_ppt_0, k = 3, alpha = 0.05)
 ### Group 2
 rosnerTest(data_full$wpi_bsl, k = 5, alpha = 0.05)
 ### Group 3
