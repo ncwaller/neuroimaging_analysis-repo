@@ -11,9 +11,9 @@
 ## Read in and Convert Data (.csv file)
 ### File has been cleaned of any missing data/outliers (listwise deletion)
 ### Seperate by rating modality, depending on research question
-setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_unpl-only_outrem_forLMM.csv", 
+data_lmm <- data.frame(read.csv("7cohort_visqst_unpl_respvnon_forLMM.csv", 
                                  header = T, sep = ","))
 View(data_lmm)
 
