@@ -10,12 +10,12 @@ library(haven)
 
 # INPUT DATA
 ## Set Working Directory
-setwd()
+setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/raw/mihyst_raw")
 
 ## Read in and Convert Data (.sav file)
-data_full <- data.frame(read_sav("file_name.sav"))
+data_full <- data.frame(read_sav("MiHYST_WPI.sav"))
 View(data_full)
 
 ## Export the Data Frame to a .csv file
-write.csv(data_full, "/path/file_exported.csv", row.names=FALSE)
+write.csv(data_full, "/Users/noahwaller/Documents/3cohort-GIMME PAPER/raw/mihyst_raw/MiHYST_WPI.csv", row.names=FALSE)
 
