@@ -39,7 +39,7 @@ data_full$reg_output_2_stanres <- rstandard(reg_output_2) #getting standardized 
 ## Model Direction 1
 
 ### Step 1: Enter Known Predictor
-step1_model <- lm(vis_unpl_avg ~ pd02_bsl, data = data_full)
+step1_model <- lm(vis06_unpl_avg ~ fm_score_bsl, data = data_full)
 summary(step1_model)
 
 ## Step 2: Enter New Predictors
