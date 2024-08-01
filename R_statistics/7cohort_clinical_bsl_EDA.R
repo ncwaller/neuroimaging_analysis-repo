@@ -21,7 +21,7 @@ data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$fm_score, data_full$cohort_f) # by grouping variable and output
+describeBy(data_full$wpi, data_full$cohort_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
