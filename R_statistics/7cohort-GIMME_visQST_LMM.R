@@ -11,16 +11,16 @@
 ## Read in and Convert Data (.csv file)
 ### File has been cleaned of any missing data/outliers (listwise deletion)
 ### Seperate by rating modality, depending on research question
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("7cohort_visqst_unpl_respvnon_forLMM.csv", 
+data_lmm <- data.frame(read.csv("visqst_bright-only_outrem_forLMM.csv", 
                                  header = T, sep = ","))
 View(data_lmm)
 
 ## Format sex and cohort as a factor
 data_lmm$sex_f <- factor(data_lmm$sex, levels=c(1:2), labels=c("Male", "Female"))
 data_lmm$cohort_f <- factor(data_lmm$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
-data_lmm$responder_f <- factor(data_lmm$responder_bin, levels=c(0:4), labels=c("Non-responder", "Responder", "HC", "FM", "Treatment Cohort without Responder Info"))
+#data_lmm$responder_f <- factor(data_lmm$responder_bin, levels=c(0:4), labels=c("Non-responder", "Responder", "HC", "FM", "Treatment Cohort without Responder Info"))
 
 ## Convert to Long Format
 #install.packages("tidyr", repos='http://cran.us.r-project.org')
@@ -32,7 +32,7 @@ library(tidyr)
 # - value: Name of new value column
 # - ...: Names of source columns that contain values
 # - factor_key: Treat the new key column as a factor (instead of character vector)
-data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_unpl_avg:vis06_unpl_avg, factor_key=TRUE)
+data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_bright_avg:vis06_bright_avg, factor_key=TRUE)
 data_lmm_long = data_lmm_long[order(data_lmm_long$subid),] # sort by subid
 
 View(data_lmm_long)
