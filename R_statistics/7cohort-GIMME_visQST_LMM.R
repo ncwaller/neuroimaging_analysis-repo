@@ -13,14 +13,14 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_outrem_forLMM.csv", 
+data_lmm <- data.frame(read.csv("visqst_bright-only_tx-resp_OA-only_outrem_forLMM.csv", 
                                  header = T, sep = ","))
 View(data_lmm)
 
 ## Format sex and cohort as a factor
 data_lmm$sex_f <- factor(data_lmm$sex, levels=c(1:2), labels=c("Male", "Female"))
-data_lmm$cohort_f <- factor(data_lmm$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
-#data_lmm$responder_f <- factor(data_lmm$responder_bin, levels=c(0:4), labels=c("Non-responder", "Responder", "HC", "FM", "Treatment Cohort without Responder Info"))
+#data_lmm$cohort_f <- factor(data_lmm$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
+data_lmm$responder_f <- factor(data_lmm$responder_bin, levels=c(0:3), labels=c("Non-responder", "Responder", "HC", "FM"))
 
 ## Convert to Long Format
 #install.packages("tidyr", repos='http://cran.us.r-project.org')
@@ -46,7 +46,7 @@ data_lmm_long = data_lmm_long[!data_lmm_long$cohort_f=="PSA",]
 #install.packages("ggeffects", repos='http://cran.us.r-project.org')
 
 library(lme4) 
-library(merDeriv)
+#library(merDeriv) #deprecated
 library(ggeffects) 
 
 
