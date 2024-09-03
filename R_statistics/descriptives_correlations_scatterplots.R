@@ -4,10 +4,10 @@
 ## Designed for any .csv file, organized by groups of interest in labelled columns
 
 # INPUT DATA
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-python")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("mihyst_visqst_unpl.csv", 
+data_full <- data.frame(read.csv("all_visqst+clinical_bsl.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -25,7 +25,36 @@ data_cortable <- cor(data_full[1:10], use = "pairwise", method = "pearson")
 View(data_cortable)
 
 ## Correlation Testing for Significance
-cor.test(data_full$column_1, data_full$column_2, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$wpi, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$sss, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$fm_score, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$pd02, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_PI_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_SRI_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Ftg_Exp_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Ftg_SI_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Ftg_CI_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Ftg_MI_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Dep_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Anx_tscore, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$bpi5, method = "pearson")
+cor.test(data_full$vis06_unpl_avg, data_full$bpi3, method = "pearson")
+
+cor.test(data_full$vis06_bright_avg, data_full$wpi, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$sss, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$fm_score, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$pd02, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_PI_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_SRI_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_Ftg_Exp_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_Ftg_SI_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_Ftg_CI_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_Ftg_MI_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_Dep_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$PROMIS_Anx_tscore, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$bpi5, method = "pearson")
+cor.test(data_full$vis06_bright_avg, data_full$bpi3, method = "pearson")
+
 
 ## Correlation Testing for Significance (Spearman)
 cor.test(data_full$high_unpl_corrected, data_full$WPI, method = "spearman")
@@ -41,9 +70,13 @@ View(data_rcortable) #3 different tables
 # Extract the correlation coefficients
 data_rcortable$r
 View(data_rcortable$r)
+write.csv(data_rcortable$r, "/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code/visqst+clinical_all_corr_r.csv")
+
 # Extract p-values
 data_rcortable$P
 View(data_rcortable$P)
+write.csv(data_rcortable$P, "/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code/visqst+clinical_all_corr_pval.csv")
+
 
 
 # SCATTERPLOTS
