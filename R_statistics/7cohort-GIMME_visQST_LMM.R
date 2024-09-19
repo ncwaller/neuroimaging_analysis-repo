@@ -13,13 +13,13 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_tx-resp_OA-only_outrem_forLMM.csv", 
+data_lmm <- data.frame(read.csv("visqst_unpl-only_tx-resp_outrem_forLMM.csv", 
                                  header = T, sep = ","))
 View(data_lmm)
 
 ## Format sex and cohort as a factor
 data_lmm$sex_f <- factor(data_lmm$sex, levels=c(1:2), labels=c("Male", "Female"))
-#data_lmm$cohort_f <- factor(data_lmm$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
+data_lmm$cohort_f <- factor(data_lmm$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM")) # keep a careful eye on this being accurate
 data_lmm$responder_f <- factor(data_lmm$responder_bin, levels=c(0:3), labels=c("Non-responder", "Responder", "HC", "FM"))
 
 ## Convert to Long Format
@@ -32,7 +32,7 @@ library(tidyr)
 # - value: Name of new value column
 # - ...: Names of source columns that contain values
 # - factor_key: Treat the new key column as a factor (instead of character vector)
-data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_bright_avg:vis06_bright_avg, factor_key=TRUE)
+data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_unpl_avg:vis06_unpl_avg, factor_key=TRUE)
 data_lmm_long = data_lmm_long[order(data_lmm_long$subid),] # sort by subid
 
 View(data_lmm_long)
@@ -189,7 +189,7 @@ coef(data_lmm_long_2group.model) # check coefficients
 
 #full, all-in-one model
 ## not as useful for comparisons, but can pull the emmeans for tukey post-hocs averaged across cohort or illuminance
-data_lmm_long.null = lmer(rating ~ sex + age + cohort_f + illuminance_level +
+data_lmm_long.null = lmer(rating ~ sex + age + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
 data_lmm_long.model = lmer(rating ~ sex + age + cohort_f * illuminance_level +
@@ -205,3 +205,64 @@ options(max.print = 999999999)
 emmeans(data_lmm_long.model, list(pairwise ~ cohort_f), adjust = "tukey")
 emmeans(data_lmm_long.model, list(pairwise ~ illuminance_level), adjust = "tukey")
 emmeans(data_lmm_long.model, list(pairwise ~ cohort_f * illuminance_level), adjust = "tukey")
+
+
+#install.packages("multcomp", repos='http://cran.us.r-project.org')
+library(multcomp)
+
+
+
+
+# Approach 2
+model = lmer(rating ~ age + cohort_f + illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE) # removed sex, kept age for unpleasantness
+anova(model)
+coef(model)
+confint(model, level=0.95)
+
+model = lmer(rating ~ cohort_f + illuminance_level +
+                          (1|subid), data=data_lmm_long, REML=FALSE) # removed sexand age for brightness
+anova(model)
+
+# Test for Significance of Main Effects/Interaction Effects (NOT Multi Comp)
+# Cohort
+data_lmm_long.null = lmer(rating ~ age + illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ age + cohort_f + illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+
+# Illuminance
+data_lmm_long.null = lmer(rating ~ age + cohort_f +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ age + cohort_f + illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+
+# Interaction
+data_lmm_long.null = lmer(rating ~ age + cohort_f + illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ age + cohort_f * illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+
+# Multi Comp
+# running glht()
+post.hoc <- glht(model, linfct = mcp(cohort_f = 'Tukey'))
+
+# displaying the result table with summary()
+summary(post.hoc)
+
+
