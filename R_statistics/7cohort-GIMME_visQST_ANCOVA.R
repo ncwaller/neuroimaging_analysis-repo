@@ -9,16 +9,16 @@
 ## likely, this covariate of interest relates to the DV... if it's unrelated, an ANOVA would suffice
 
 # INPUT DATA
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visQST_allmetrics_outrem.csv", 
+data_full <- data.frame(read.csv("all_visqst+clinical_bsl.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Format sex and cohort as a factor
 data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
-data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
+data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM"))
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
 ## Create subframe based on baseline PDQ02 of 3 or greater
@@ -30,7 +30,15 @@ data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
 #####install.packages("httpgd", repos='http://cran.us.r-project.org')
 
 ## Basic check to see if the covariate and DV are related at all 
-cor.test(data_bslpd02_subset$fm_score_bsl, data_bslpd02_subset$pd02_bsl, method = "pearson")
+#cor.test(data_bslpd02_subset$fm_score_bsl, data_bslpd02_subset$pd02_bsl, method = "pearson")
+cor.test(data_full$sex, data_full$vis_unpl_avg, method = "pearson")
+cor.test(data_full$age, data_full$vis_unpl_avg, method = "pearson") # age is related to avg vis unpl
+
+cor.test(data_full$sex, data_full$vis_bright_avg, method = "pearson")
+cor.test(data_full$age, data_full$vis_bright_avg, method = "pearson") # not the case for brightness
+
+cor.test(data_full$sex, data_full$fm_score, method = "pearson")
+cor.test(data_full$age, data_full$fm_score, method = "pearson") 
 
 library(pastecs)
 ### For IV
@@ -69,7 +77,7 @@ library(rstatix)
 library(broom)
 
 ## ANCOVA Function
-res.aov <- data_bslpd02_subset %>% anova_test(fm_score_bsl ~ pd02_bsl + responder_f)
+res.aov <- data_full %>% anova_test(vis_unpl_avg ~ age + cohort_f)
 get_anova_table(res.aov)
 
 # Pairwise comparisons
@@ -78,10 +86,11 @@ library(emmeans)
 
 pwc <- data_full %>% 
   emmeans_test(
-    fm_score_bsl ~ responder_f, covariate = pd02_bsl,
-    p.adjust.method = "bonferroni"
+    vis_unpl_avg ~ cohort_f, covariate = age,
+    p.adjust.method = "tukey"
     )
-pwc
+pwc 
+print(pwc, n = 21)
 
 ################################################################################################
 
