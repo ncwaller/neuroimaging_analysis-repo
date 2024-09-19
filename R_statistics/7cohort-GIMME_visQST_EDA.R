@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("all_thumbqst_bsl.csv", 
+data_full <- data.frame(read.csv("all_visqst+clinical_bsl.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -26,11 +26,11 @@ View(data_bslpd02_subset)
 # Remove Specific Cohort
 data_bslpd02_subset = data_bslpd02_subset[!data_bslpd02_subset$cohort_f=="CPP",]
 
-# Onle Specific Cohort
-data_thumb_subset = data_full[data_full$cohort_f=="FM",]
+# Only Specific Cohort
+data_vis_subset = data_full[data_full$cohort_f=="CTS",]
 
 ### Group 1
-rosnerTest(data_thumb_subset$asc_ppt_0, k = 3, alpha = 0.05)
+rosnerTest(data_vis_subset$vis_unpl_avg, k = 3, alpha = 0.05)
 
 # EXPLORE DATA
 ## Descriptives
