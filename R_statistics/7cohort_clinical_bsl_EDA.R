@@ -7,7 +7,7 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("all_clinical_bsl.csv", 
+data_full <- data.frame(read.csv("all_clinical.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -21,7 +21,7 @@ data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA
 library(psych)
 
 describe(data_full) # full
-describeBy(data_full$wpi, data_full$cohort_f) # by grouping variable and output
+describeBy(data_full$bpi3, data_full$cohort_f) # by grouping variable and output
 
 
 # SCATTERPLOTS
