@@ -25,8 +25,6 @@ data_cortable <- cor(data_full[1:10], use = "pairwise", method = "pearson")
 View(data_cortable)
 
 ## Correlation Testing for Significance
-cor.test(data_full$vis06_unpl_avg, data_full$wpi, method = "pearson")
-cor.test(data_full$vis06_unpl_avg, data_full$sss, method = "pearson")
 cor.test(data_full$vis06_unpl_avg, data_full$fm_score, method = "pearson")
 cor.test(data_full$vis06_unpl_avg, data_full$pd02, method = "pearson")
 cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_PI_tscore, method = "pearson")
@@ -40,8 +38,6 @@ cor.test(data_full$vis06_unpl_avg, data_full$PROMIS_Anx_tscore, method = "pearso
 cor.test(data_full$vis06_unpl_avg, data_full$bpi5, method = "pearson")
 cor.test(data_full$vis06_unpl_avg, data_full$bpi3, method = "pearson")
 
-cor.test(data_full$vis06_bright_avg, data_full$wpi, method = "pearson")
-cor.test(data_full$vis06_bright_avg, data_full$sss, method = "pearson")
 cor.test(data_full$vis06_bright_avg, data_full$fm_score, method = "pearson")
 cor.test(data_full$vis06_bright_avg, data_full$pd02, method = "pearson")
 cor.test(data_full$vis06_bright_avg, data_full$PROMIS_PI_tscore, method = "pearson")
