@@ -12,13 +12,13 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("all_visqst+clinical_bsl.csv", 
+data_full <- data.frame(read.csv("fmscore&visqst_ancova.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Format sex and cohort as a factor
-data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
-data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM"))
+data_full$sex_f <- factor(data_full$sex, levels=c(1:2), labels=c("Male", "Female"))
+data_full$cohort_f <- factor(data_full$cohort, levels=c(0:5), labels=c("HC", "RA", "OA", "CPP", "PSA", "FM")) # CHANGED TO ADDRESS CONTRAST ISSUE
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
 ## Create subframe based on baseline PDQ02 of 3 or greater
@@ -77,20 +77,21 @@ library(rstatix)
 library(broom)
 
 ## ANCOVA Function
-res.aov <- data_full %>% anova_test(vis_unpl_avg ~ age + cohort_f)
+res.aov <- data_full %>% anova_test(vis_bright_avg ~ age + sex + cohort_f)
 get_anova_table(res.aov)
 
 # Pairwise comparisons
 #####install.packages("emmeans", repos='http://cran.us.r-project.org')
 library(emmeans)
 
-pwc <- data_full %>% 
-  emmeans_test(
-    vis_unpl_avg ~ cohort_f, covariate = age,
-    p.adjust.method = "tukey"
-    )
-pwc 
-print(pwc, n = 21)
+posthoc <- emmeans_test(vis_bright_avg ~ cohort_f, covariate = age,
+                        p.adjust.method = "bonferroni", data=data_full)
+posthoc
+### Request estimated marginal (i.e., covariate-adjusted) means
+attr(posthoc, "emmeans")
+
+
+
 
 ################################################################################################
 
