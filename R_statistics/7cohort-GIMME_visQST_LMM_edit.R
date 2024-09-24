@@ -13,10 +13,10 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_unpl-only_outrem_forLMM.csv", # unpleasantness
+data_lmm <- data.frame(read.csv("visqst_unpl-only_tx-resp_outrem_forLMM.csv", # unpleasantness
                                  header = T, sep = ","))
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_outrem_forLMM.csv", # brightness
+data_lmm <- data.frame(read.csv("visqst_bright-only_tx-resp_outrem_forLMM.csv", # brightness
                                  header = T, sep = ","))
 View(data_lmm)
 
@@ -71,7 +71,7 @@ library(ggeffects)
 # COHORT #
 #########################################################################################################
 
-# Full Model (Cohort)
+# Full Model (Cohort) (Don't Include interaction Term for Mult Comp)
 full_model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 anova(full_model)
