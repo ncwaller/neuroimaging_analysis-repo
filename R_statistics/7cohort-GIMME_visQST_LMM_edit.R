@@ -13,10 +13,10 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_unpl-only_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # unpleasantness
+data_lmm <- data.frame(read.csv("visqst_unpl-only_noHCFM_tx-resp_CPP-only_cov-fmscore_outrem_forLMM.csv", # unpleasantness
                                  header = T, sep = ","))
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # brightness
+data_lmm <- data.frame(read.csv("visqst_bright-only_noHCFM_tx-resp_CPP-only_cov-fmscore_outrem_forLMM.csv", # brightness
                                  header = T, sep = ","))
 
 data_lmm <- data.frame(read.csv("thumbqst_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # thumb
