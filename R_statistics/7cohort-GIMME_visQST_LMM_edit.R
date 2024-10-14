@@ -13,10 +13,13 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_unpl-only_tx-resp_cov-fmscore_outrem_forLMM.csv", # unpleasantness
+data_lmm <- data.frame(read.csv("visqst_unpl-only_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # unpleasantness
                                  header = T, sep = ","))
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_tx-resp_cov-fmscore_outrem_forLMM.csv", # brightness
+data_lmm <- data.frame(read.csv("visqst_bright-only_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # brightness
+                                 header = T, sep = ","))
+
+data_lmm <- data.frame(read.csv("thumbqst_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # thumb
                                  header = T, sep = ","))
 View(data_lmm)
 
@@ -39,6 +42,8 @@ library(tidyr)
 data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_unpl_avg:vis06_unpl_avg, factor_key=TRUE) # unpleasantness
 
 data_lmm_long <- gather(data_lmm, illuminance_level, rating, vis01_bright_avg:vis06_bright_avg, factor_key=TRUE) # brightness
+
+data_lmm_long <- gather(data_lmm, pressure_level, rating, thumb01_avg:thumb06_avg, factor_key=TRUE) # brightness
 
 data_lmm_long = data_lmm_long[order(data_lmm_long$subid),] # sort by subid
 
@@ -224,20 +229,93 @@ data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
 
 # Illuminance (Main Effect)
-data_lmm_long.null = lmer(rating ~ sex + age + responder_f +
+data_lmm_long.null = lmer(rating ~ sex + age + fm_score + responder_f +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
-data_lmm_long.model = lmer(rating ~ sex + age + responder_f + illuminance_level +
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score + responder_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
 
 # Interaction (Cohort X Illuminance)
-data_lmm_long.null = lmer(rating ~ sex+  age + responder_f + illuminance_level +
+data_lmm_long.null = lmer(rating ~ sex+  age + fm_score + responder_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
-data_lmm_long.model = lmer(rating ~ sex + age + responder_f * illuminance_level +
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score + responder_f * illuminance_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+
+# Multiple Pairwise Comparisons
+#install.packages("multcomp", repos='http://cran.us.r-project.org')
+#install.packages("emmeans", repos='http://cran.us.r-project.org')
+library(multcomp)
+library(emmeans)
+
+# running glht()
+post.hoc <- glht(full_model, linfct = mcp(responder_f = 'Tukey'))
+summary(post.hoc)
+
+# running emmeans
+emmeans(full_model, list(pairwise ~ responder_f), adjust = "tukey")
+emmeans(full_model, list(pairwise ~ illuminance_level), adjust = "tukey")
+emmeans(full_model, list(pairwise ~ responder_f * illuminance_level), adjust = "tukey")
+
+
+
+
+
+#########################################################################################################
+# TX RESPONSE - INCLUDING FM SCORE # FOR THUMB #
+#########################################################################################################
+
+# Full Model (Tx Response)
+full_model = lmer(rating ~ sex + age + fm_score_bsl + responder_f + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+anova(full_model)
+coef(full_model)
+confint(full_model, level=0.95)
+
+
+# Test for Significance of Main Effects/Interaction Effects (NOT Multi Comp)
+# Cohort (Main Effect)
+data_lmm_long.null = lmer(rating ~ sex + age + fm_score_bsl + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+# FM Score (Main Effect)
+data_lmm_long.null = lmer(rating ~ sex + age + responder_f + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+# Illuminance (Main Effect)
+data_lmm_long.null = lmer(rating ~ sex + age + fm_score_bsl + responder_f +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model
+anova(data_lmm_long.null,data_lmm_long.model)
+
+# Interaction (Cohort X Illuminance)
+data_lmm_long.null = lmer(rating ~ sex+  age + fm_score_bsl + responder_f + pressure_level +
+                         (1|subid), data=data_lmm_long, REML=FALSE)
+
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f * pressure_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
 data_lmm_long.model
