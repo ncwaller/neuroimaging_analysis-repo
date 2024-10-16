@@ -12,7 +12,7 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("visqst_unpl-only_tx-resp_cov-fmscore_outrem_forANCOVA.csv", 
+data_full <- data.frame(read.csv("visqst_ancova.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -78,21 +78,33 @@ library(rstatix)
 library(broom)
 
 ## ANCOVA Function
-res.aov <- data_full %>% anova_test(vis_unpl_avg ~ age + sex + fm_score_bsl + responder_f)
+res.aov <- data_full %>% anova_test(vis_bright_avg ~ age + sex + cohort_f)
 get_anova_table(res.aov)
 
 # Pairwise comparisons
 #####install.packages("emmeans", repos='http://cran.us.r-project.org')
 library(emmeans)
 
-posthoc <- emmeans_test(vis_unpl_avg ~ responder_f, covariate = fm_score_bsl,
+posthoc <- emmeans_test(fm_score ~ cohort_f, covariate = c(age,sex),
                         p.adjust.method = "bonferroni", data=data_full)
 posthoc
 ### Request estimated marginal (i.e., covariate-adjusted) means
 attr(posthoc, "emmeans")
 
+# Pairwise with glht()
+library(multcomp)
+
+summary(multcomp::glht(lm(fm_score ~ cohort_f+age, data=data_full), 
+    linfct = multcomp::mcp(cohort_f="Tukey")), test=multcomp::adjusted(type="none")) # controlling for just age
+
+summary(multcomp::glht(lm(vis_bright_avg ~ cohort_f+age+sex, data=data_full), 
+    linfct = multcomp::mcp(cohort_f="Tukey")), test=multcomp::adjusted(type="none")) # controlling for age and sex
 
 
+glhtobj <- summary(multcomp::glht(lm(vis_bright_avg ~ cohort_f+age+sex, data=data_full), 
+    linfct = multcomp::mcp(cohort_f="Tukey")), test=multcomp::adjusted(type="none")) 
+
+confint(glhtobj)  # get confidence intervals
 
 ################################################################################################
 
