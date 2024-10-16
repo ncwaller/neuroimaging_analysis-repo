@@ -13,10 +13,10 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_unpl-only_noHCFM_tx-resp_CPP-only_cov-fmscore_outrem_forLMM.csv", # unpleasantness
+data_lmm <- data.frame(read.csv("visqst_unpl-only_outrem_forLMM.csv", # unpleasantness
                                  header = T, sep = ","))
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_noHCFM_tx-resp_CPP-only_cov-fmscore_outrem_forLMM.csv", # brightness
+data_lmm <- data.frame(read.csv("visqst_bright-only_outrem_forLMM.csv", # brightness
                                  header = T, sep = ","))
 
 data_lmm <- data.frame(read.csv("thumbqst_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # thumb
@@ -54,9 +54,13 @@ View(data_lmm_long)
 #install.packages("lme4", repos='http://cran.us.r-project.org')
 #install.packages("merDerive", repos='http://cran.us.r-project.org') #deprecated
 #install.packages("ggeffects", repos='http://cran.us.r-project.org')
+#install.packages("DescTools", repos='http://cran.us.r-project.org')
+#install.packages("effectsize", repos='http://cran.us.r-project.org')
 library(lme4) 
 #library(merDeriv) #deprecated
 library(ggeffects) 
+#library(DescTools)
+#library(effectsize) 
 
 ##########################################################################################################
 
@@ -79,10 +83,11 @@ library(ggeffects)
 # Full Model (Cohort) (Don't Include interaction Term for Mult Comp)
 full_model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
+summary(full_model)
 anova(full_model)
 coef(full_model)
 confint(full_model, level=0.95)
-
+EtaSq(full_model)
 
 # Test for Significance of Main Effects/Interaction Effects (NOT Multi Comp)
 # Cohort (Main Effect)
@@ -94,6 +99,7 @@ data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
+
 
 # Illuminance (Main Effect)
 data_lmm_long.null = lmer(rating ~ sex + age + cohort_f +
