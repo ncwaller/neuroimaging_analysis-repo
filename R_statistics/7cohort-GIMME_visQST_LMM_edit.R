@@ -13,10 +13,10 @@
 ### Seperate by rating modality, depending on research question
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
-data_lmm <- data.frame(read.csv("visqst_unpl-only_outrem_forLMM.csv", # unpleasantness
+data_lmm <- data.frame(read.csv("visqst_unpl-only_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # unpleasantness
                                  header = T, sep = ","))
 
-data_lmm <- data.frame(read.csv("visqst_bright-only_outrem_forLMM.csv", # brightness
+data_lmm <- data.frame(read.csv("visqst_bright-only_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # brightness
                                  header = T, sep = ","))
 
 data_lmm <- data.frame(read.csv("thumbqst_noHCFM_tx-resp_cov-fmscore_outrem_forLMM.csv", # thumb
@@ -235,20 +235,20 @@ data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
 
 # Illuminance (Main Effect)
-data_lmm_long.null = lmer(rating ~ sex + age + fm_score + responder_f +
+data_lmm_long.null = lmer(rating ~ sex + age + fm_score_bsl + responder_f +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
-data_lmm_long.model = lmer(rating ~ sex + age + fm_score + responder_f + illuminance_level +
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
 
 # Interaction (Cohort X Illuminance)
-data_lmm_long.null = lmer(rating ~ sex+  age + fm_score + responder_f + illuminance_level +
+data_lmm_long.null = lmer(rating ~ sex+  age + fm_score_bsl + responder_f + illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
-data_lmm_long.model = lmer(rating ~ sex + age + fm_score + responder_f * illuminance_level +
+data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f * illuminance_level +
                          (1|subid), data=data_lmm_long, REML=FALSE)
 
 data_lmm_long.model
