@@ -12,7 +12,7 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("visqst_ancova.csv", 
+data_full <- data.frame(read.csv("fmscore_ancova.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -78,8 +78,15 @@ library(rstatix)
 library(broom)
 
 ## ANCOVA Function
-res.aov <- data_full %>% anova_test(vis_bright_avg ~ age + sex + cohort_f)
+res.aov <- data_full %>% anova_test(fm_score ~ age + sex_f + cohort_f)
 get_anova_table(res.aov)
+
+# Effect Size
+fit <- aov(fm_score ~ age + sex_f + cohort_f, 
+          data = data_full)
+summary(fit)
+
+eta_squared(fit)
 
 # Pairwise comparisons
 #####install.packages("emmeans", repos='http://cran.us.r-project.org')
