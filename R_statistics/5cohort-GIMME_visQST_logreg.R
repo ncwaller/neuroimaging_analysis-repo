@@ -4,33 +4,32 @@
 ## Applied to 5 Cohort GIMME Project - visual QST + clinical measures - to predict responders to treatment
 
 # INPUT DATA
-setwd("/Users/noahwaller/Documents/3cohort-GIMME PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("7cohort_visQST_allmetrics_outrem_forLogReg.csv", 
+data_full <- data.frame(read.csv("visqst_bright-only_noHCFM_tx-resp_cov-fmscore_outrem_forLogReg.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 ## Check Variable Types (Factor) and Levels
-data_full$sex_f <- factor(data_full$sex, levels=c(0:1), labels=c("Male", "Female"))
-data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "FM", "PSA", "CPP"))
+data_full$sex_f <- factor(data_full$sex, levels=c(1:2), labels=c("Male", "Female"))
+data_full$cohort_f <- factor(data_full$cohort, levels=c(0:6), labels=c("HC", "RA", "CTS", "OA", "CPP", "PSA", "FM"))
 data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c("Non-responder", "Responder"))
 
 ## Create subframe based on baseline PDQ02 of 3 or greater
-data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
+#data_bslpd02_subset = data_full[data_full$pd02_bsl>=3,]
 
-View(data_bslpd02_subset)
+#View(data_bslpd02_subset)
 
 ################################################################################################
 
 #####install.packages("aod", repos='http://cran.us.r-project.org')
 library(aod)
 
-mylogit <- glm(responder_f ~ vis_unpl_avg + vis_bright_avg + fm_score_bsl, data = data_bslpd02_subset, family = "binomial")
+mylogit <- glm(responder_f ~ vis_unpl_avg + fm_score_bsl + age + sex_f, data = data_full, family = "binomial")
 summary(mylogit)
 
-confint(mylogit) # confidence intervals
-
+exp(cbind(OR = coef(mylogit), confint(mylogit)))
 
 
 
@@ -59,27 +58,28 @@ plot(data_full$pd02_bsl, data_full$responder_f)
 
 
 # LOGISTIC REGRESSION
-## Model 0 with Intercepts Only
+## Model 0 with Intercepts Only (and age + sex)
 ### Use constant as predictor
 ?glm
-model0 <- glm(responder_f ~ 1, data = data_full, family = binomial()) #binomial for logistic
+model0 <- glm(responder_f ~ 1 + age + sex_f, data = data_full, family = binomial()) #binomial for logistic
 summary(model0)
 
-## Model 1 with Continuous Predictor (vis_unpl_avg)
-model1 <- glm(responder_f ~ vis_unpl_avg, data = data_full, family = binomial()) 
+## Model 1 with Continuous Predictor (fm_score)
+model1 <- glm(responder_f ~ fm_score_bsl + age + sex_f, data = data_full, family = binomial()) 
 summary(model1)
 
 ### Calculate odds ratios
 exp(model1$coefficients)
 
-## Does visual unpleasantness model differ from intercepts-only model?
+## Does FM score model differ from age/sex-only model?
 model01 <- anova(model0, model1)
 model01
-?pchisq
-1 - pchisq(2.43, 1) #no, according to chi-squre distribution. input deviance difference.
+#?pchisq
+1 - pchisq(8.8954, 1) #yes! according to chi-squre distribution. input deviance difference.
+
 
 ## Model 2 with 2 continuous predictors (vis_unpl and fm_score) 
-model2 <- glm(responder_f ~ vis_unpl_avg + fm_score_bsl + pd02_bsl, data = data_full, family = binomial())
+model2 <- glm(responder_f ~ vis_bright_avg + fm_score_bsl + age + sex_f, data = data_full, family = binomial())
 summary(model2)
 
 ### Calculate odds ratios
@@ -88,13 +88,9 @@ exp(model2$coefficients)
 ## Does multuiple continuous predictors model differ from intercepts-only model?
 model02 <- anova(model0, model2)
 model02
-1 - pchisq(6.77, 2) #not quite sure how to manage this one
+1 - pchisq(13.245, 2) #yes
 
 ## Does Intervention + Duration model differ from Intervention model?
 model12 <- anova(model1, model2)
 model12
-1 - pchisq(.0019835, 1) #no, so select Intervention model
-
-
-# More assumption need to be checked, but this model is not performing in any case. Yet.
-# Check Beltz code for more detail as needed.
+1 - pchisq(8.1197, 1) #yes, so this model is best so far
