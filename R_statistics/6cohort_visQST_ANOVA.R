@@ -9,11 +9,12 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code/anova")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("promis_anx_noCPP.csv", 
+data_full <- data.frame(read.csv("promis_anx_CPP.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
 data_full$cohort_f <- factor(data_full$cohort, levels=c(0:4), labels=c("HC", "RA", "OA", "PSA", "FM")) # CHANGED TO REMOVE CPP TRIPLE CHECK ALWAYS
+data_full$cohort_f <- factor(data_full$cohort, levels=c(0:2), labels=c("HC", "CPP", "FM")) # CHANGED TO ADD CPP TRIPLE CHECK ALWAYS
 
 ####install.packages("esvis", repos='http://cran.us.r-project.org')
 library(esvis)
