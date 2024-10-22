@@ -12,7 +12,7 @@
 setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("fmscore_ancova.csv", 
+data_full <- data.frame(read.csv("visqst_ancova.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -72,17 +72,19 @@ anova(m1, m2)
 #####install.packages("ggpubr", repos='http://cran.us.r-project.org')
 #####install.packages("rstatix", repos='http://cran.us.r-project.org')
 #####install.packages("broom", repos='http://cran.us.r-project.org')
+#install.packages("esc", repos='http://cran.us.r-project.org')
+library(esc) 
 library(tidyverse)
 library(ggpubr)
 library(rstatix)
 library(broom)
 
 ## ANCOVA Function
-res.aov <- data_full %>% anova_test(fm_score ~ age + sex_f + cohort_f)
+res.aov <- data_full %>% anova_test(vis_bright_avg ~ age + sex_f + cohort_f)
 get_anova_table(res.aov)
 
 # Effect Size
-fit <- aov(fm_score ~ age + sex_f + cohort_f, 
+fit <- aov(vis_bright_avg ~ age + sex_f + cohort_f, 
           data = data_full)
 summary(fit)
 
@@ -108,7 +110,7 @@ summary(multcomp::glht(lm(vis_bright_avg ~ cohort_f+age+sex, data=data_full),
     linfct = multcomp::mcp(cohort_f="Tukey")), test=multcomp::adjusted(type="none")) # controlling for age and sex
 
 
-glhtobj <- summary(multcomp::glht(lm(vis_bright_avg ~ cohort_f+age+sex, data=data_full), 
+glhtobj <- summary(multcomp::glht(lm(fm_score ~ cohort_f+age+sex, data=data_full), 
     linfct = multcomp::mcp(cohort_f="Tukey")), test=multcomp::adjusted(type="none")) 
 
 confint(glhtobj)  # get confidence intervals
