@@ -56,6 +56,8 @@ View(data_lmm_long)
 #install.packages("ggeffects", repos='http://cran.us.r-project.org')
 #install.packages("DescTools", repos='http://cran.us.r-project.org')
 #install.packages("effectsize", repos='http://cran.us.r-project.org')
+#install.packages("esc", repos='http://cran.us.r-project.org')
+library(esc) 
 library(lme4) 
 #library(merDeriv) #deprecated
 library(ggeffects) 
@@ -99,7 +101,7 @@ data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
-
+esc_chisq(chisq = 24.068, totaln = 238, es.type = "d") # calculate effect size for model comparison - set at Cohen's d
 
 # Illuminance (Main Effect)
 data_lmm_long.null = lmer(rating ~ sex + age + cohort_f +
@@ -110,6 +112,7 @@ data_lmm_long.model = lmer(rating ~ sex + age + cohort_f + illuminance_level +
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
+esc_chisq(chisq = 300, totaln = 239, es.type = "d")
 
 # Interaction (Cohort X Illuminance)
 data_lmm_long.null = lmer(rating ~ sex+  age + cohort_f + illuminance_level +
@@ -120,6 +123,7 @@ data_lmm_long.model = lmer(rating ~ sex + age + cohort_f * illuminance_level +
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
+esc_chisq(chisq = 74.946, totaln = 238, es.type = "d")
 
 
 # Multiple Pairwise Comparisons
@@ -223,6 +227,7 @@ data_lmm_long.model = lmer(rating ~ sex + age + fm_score_bsl + responder_f + ill
 
 data_lmm_long.model
 anova(data_lmm_long.null,data_lmm_long.model)
+esc_chisq(chisq = 8.2115, totaln = 113, es.type = "d") # calculate effect size for model comparison - set at Cohen's d
 
 # FM Score (Main Effect)
 data_lmm_long.null = lmer(rating ~ sex + age + responder_f + illuminance_level +
