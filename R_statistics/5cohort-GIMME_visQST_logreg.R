@@ -46,6 +46,8 @@ levels(data_full$responder_f) # Non-responder is first and will be baseline
 # ASSUMPTIONS
 ## Incomplete Information for Categorical Predictor 
 ### Examine expected frequencies
+#install.packages("esc", repos='http://cran.us.r-project.org')
+library(esc) 
 library(gmodels)
 CrossTable(data_full$insert_categorical_predictor, data_full$responder_f, expected = TRUE) #if I have categorical predictor
 
@@ -75,8 +77,8 @@ exp(model1$coefficients)
 model01 <- anova(model0, model1)
 model01
 #?pchisq
-1 - pchisq(8.8954, 1) #yes! according to chi-squre distribution. input deviance difference.
-
+1 - pchisq(8.3634, 1) #yes! according to chi-squre distribution. input deviance difference.
+esc_chisq(chisq = 8.8954, totaln = 113, es.type = "d") # calculate effect size for model comparison - set at Cohen's d
 
 ## Model 2 with 2 continuous predictors (vis_unpl and fm_score) 
 model2 <- glm(responder_f ~ vis_bright_avg + fm_score_bsl + age + sex_f, data = data_full, family = binomial())
@@ -89,8 +91,10 @@ exp(model2$coefficients)
 model02 <- anova(model0, model2)
 model02
 1 - pchisq(13.245, 2) #yes
+esc_chisq(chisq = 13.245, totaln = 113, es.type = "d") # calculate effect size for model comparison - set at Cohen's d
 
 ## Does Intervention + Duration model differ from Intervention model?
 model12 <- anova(model1, model2)
 model12
 1 - pchisq(8.1197, 1) #yes, so this model is best so far
+esc_chisq(chisq = 8.1197, totaln = 113, es.type = "d") # calculate effect size for model comparison - set at Cohen's d
