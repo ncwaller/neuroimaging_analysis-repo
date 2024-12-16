@@ -4,10 +4,10 @@
 ## Applied to 5 Cohort GIMME Project - visual QST + clinical measures - to predict responders to treatment
 
 # INPUT DATA
-setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code")
+setwd("/Users/noahwaller/Documents/VISUAL-QST-7cohort PAPER/csv_for-code/logreg")
 
 ## Read in and Convert Data (.csv file)
-data_full <- data.frame(read.csv("visqst_unpl-only_noHCFM_tx-resp_cov-fmscore_outrem_forLogReg.csv", 
+data_full <- data.frame(read.csv("thumbqst_noHCFM_tx-resp_cov-fmscore_outrem_forLogReg.csv", 
                                  header = T, sep = ","))
 View(data_full)
 
@@ -26,7 +26,13 @@ data_full$responder_f <- factor(data_full$responder_bin, levels=c(0:1), labels=c
 #####install.packages("aod", repos='http://cran.us.r-project.org')
 library(aod)
 
-mylogit <- glm(responder_f ~ vis_unpl_avg + pd02_bsl + age + sex_f, data = data_full, family = "binomial")
+mylogit <- glm(responder_f ~ vis_unpl_avg + fm_score_bsl + age + sex_f, data = data_full, family = "binomial")
+summary(mylogit)
+
+exp(cbind(OR = coef(mylogit), confint(mylogit)))
+
+
+mylogit <- glm(responder_f ~ thumb_avg + fm_score_bsl + age + sex_f, data = data_full, family = "binomial")
 summary(mylogit)
 
 exp(cbind(OR = coef(mylogit), confint(mylogit)))
